@@ -11,6 +11,7 @@ module.exports = {
     useNullAsDefault: true
   },
   test: {
+    client: "pg",
     connection: "postgres://localhost/paletteproducer_test",
     migrations: {
       directory: "./db/migrations"
