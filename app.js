@@ -34,6 +34,13 @@ app.post("/api/v1/login", (request, response) => {
 
 app.post("/api/v1/signup", (request, response) => {
   const { username, password } = request.body;
+  for (let requiredParameter of ["username", "password"]) {
+    if (!palette[requiredParameter]) {
+      return response.status(422).send({
+        error: `Expected format: {username: <string>, password <string>. You're missing a '${requiredParameter}' property.`
+      });
+    }
+  }
   database("users")
     .insert({ username, password }, "id")
     .then(id => {
@@ -91,6 +98,174 @@ app.get("/api/v1/:project_id/palettes/", async (request, response) => {
     error => response.status(500).json({ error: error });
   }
 });
+
+// add a new project to the db
+app.post("/api/v1/projects", async (request, response) => {
+  const project = request.body;
+  for (let requiredParameter of ['user_id', 'name']) {
+    if (!project[requiredParameter]) {
+      return response
+        .status(422)
+        .send({ error: `Expected format: { user_id: <integer>, name: <string>}. You're missing a '${requiredParameter}' property.` });
+    }
+  }
+  database('projects').insert(project, 'id')
+    .then(projectId => {
+      response.status(201).json({ id: projectId[0], ...project })
+    })
+    .catch(error => {
+      response.status(500).json({ error });
+    });
+})
+
+// add a palette to the db
+app.post("/api/v1/palettes", async (request, response) => {
+  const palette = request.body;
+  console.log(palette)
+  for (let requiredParameter of ["project_id", "name", "color1", "color2", "color3", "color4", "color5"]) {
+    if (!palette[requiredParameter]) {
+      return response.status(422).send({
+        error: `Expected format: { project_id: <integer>, name: <string>, color1:<hexcode>, color1]2:<hexcode>, color3:<hexcode>, color4:<hexcode>, color5:<hexcode>}. You're missing a '${requiredParameter}' property.`
+      });
+    }
+  }
+  database("palettes")
+    .insert(palette, "id")
+    .then(paletteId => {
+      response.status(201).json({ id: paletteId[0], ...palette });
+    })
+    .catch(error => {
+      response.status(500).json({ error: error });
+    });
+});
+
+// patch a palette
+
+app.patch("/api/v1/palettes/:id", async (request, response) => {
+  const { id } = request.params;
+  console.log(request.body)
+  const selectedPalette = await database("palettes")
+    .where("id", id)
+    .select();
+  if (!selectedPalette.length) {
+    return response
+      .status(404)
+      .json({ error: `No existing palette with id of ${id}` });
+  }
+  const possibleParameters = [
+    "name",
+    "color1",
+    "color2",
+    "color3",
+    "color4",
+    "color5"
+  ];
+  const targetParam = Object.keys(request.body)[0];
+  const hasCorrectParams = possibleParameters.includes(targetParam);
+  console.log(targetParam, hasCorrectParams)
+  if (!hasCorrectParams) {
+    return response.status(422).json({
+      error: `You can only update a palette's <name>, <color1>, <color2>, <color3>, <color4>, <color5>, not ${targetParam}`
+    });
+  }
+  else {
+    return database("palettes")
+      .where("id", id)
+      .update({
+        [targetParam]: request.body[targetParam]
+      })
+      .then(() =>
+        response
+          .status(202)
+          .json({ message: `${targetParam} updated` })
+      )
+      .catch(error => response.status(500).json({ error }));
+  }
+});
+
+// patch a project
+
+app.patch("/api/v1/projects/:id", async (request, response) => {
+  const { id } = request.params;
+  console.log(request.body)
+  const selectedProject = await database("projects")
+    .where("id", id)
+    .select();
+  if (!selectedProject.length) {
+    return response
+      .status(404)
+      .json({ error: `No existing palette with id of ${id}` });
+  }
+  const possibleParameters = [
+    "name"
+  ];
+  const targetParam = Object.keys(request.body)[0];
+  const hasCorrectParams = possibleParameters.includes(targetParam);
+  console.log(targetParam, hasCorrectParams)
+  if (!hasCorrectParams) {
+    return response.status(422).json({
+      error: `You can only update a projects's <name> not ${targetParam}`
+    });
+  }
+  else {
+    return database("projects")
+      .where("id", id)
+      .update({
+        [targetParam]: request.body[targetParam]
+      })
+      .then(() =>
+        response
+          .status(202)
+          .json({ message: `${targetParam} updated` })
+      )
+      .catch(error => response.status(500).json({ error }));
+  }
+});
+
+// delete a project 
+app.delete("/api/v1/projects/:id", (request, response) => {
+  const { id } = request.params;
+  database("projects")
+    .where({ id })
+    .del()
+    .then(res => {
+      if (res === 0) {
+        return response
+          .status(404)
+          .json(`Project with an id: ${id} does not exist.`);
+      }
+      response
+        .status(200)
+        .json(`Project deleted`);
+    })
+    .catch(err => {
+      response.status(500).json(err);
+    });
+});
+
+app.delete("/api/v1/palettes/:id", (request, response) => {
+  const { id } = request.params;
+  database("palettes")
+    .where({ id })
+    .del()
+    .then(res => {
+      if (res === 0) {
+        return response
+          .status(404)
+          .json(`Palette with an id: ${id} does not exist.`);
+      }
+      response.status(200).json(`Palette deleted`);
+    })
+    .catch(err => {
+      response.status(500).json(err);
+    });
+});
+
+app.get("/api/v1/teapot", (request, response) => {
+  return response
+    .status(418)
+    .json("The server refuses the attempt to brew coffee with a teapot");
+})
 
 
 export default app;

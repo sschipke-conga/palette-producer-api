@@ -18,13 +18,14 @@ exports.up = function (knex) {
     knex.schema.createTable("palettes", function (table) {
       table.increments("id").primary();
       table.integer("project_id").unsigned();
-      table.foreign("project_id").references("projects.id");
+      table.foreign("project_id").references("projects.id")
+      .onDelete('CASCADE');
       table.string("name");
-      table.string("color1");
-      table.string("color2");
-      table.string("color3");
-      table.string("color4");
-      table.string("color5");
+      table.string("color1", 7);
+      table.string("color2", 7);
+      table.string("color3", 7);
+      table.string("color4", 7);
+      table.string("color5", 7);
       table.timestamps(true, true);
     })
   ]);
