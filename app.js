@@ -24,7 +24,7 @@ app.post("/api/v1/login", (request, response) => {
       } else {
         return response
           .status(401)
-          .json({error:"Username or password incorrect"});
+          .json({ error: "Username or password incorrect" });
       }
     })
     .catch(err => response.status(500).json({ error: err }));
@@ -48,24 +48,24 @@ app.post("/api/v1/signup", (request, response) => {
 
 // get all the projects for a specific user
 
-app.get("/api/v1/:user_id/projects", async (request, response) => {
-  const {user_id} = request.params
+app.get("/api/v1/users/:user_id/projects", async (request, response) => {
+  const { user_id } = request.params
   try {
-  const projects = await database("projects").where({user_id})
-  if(projects.length) {
-    return response.status(200).json(projects)
-  } else {
-    return response.status(404).json({message: "No projects yet!"})
-  }
+    const projects = await database("projects").where({ user_id })
+    if (projects.length) {
+      return response.status(200).json(projects)
+    } else {
+      return response.status(404).json({ message: "No projects yet!" })
+    }
   } catch {
-    error => response.status(500).json({error: error})
+    error => response.status(500).json({ error: error })
   }
 })
 
 app.get("/api/v1/projects/:id", async (request, response) => {
   const { id } = request.params;
   try {
-    const project = await database("projects").where({id}).first();
+    const project = await database("projects").where({ id }).first();
     console.log(project)
     if (project) {
       return response.status(200).json(project);
