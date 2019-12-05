@@ -62,4 +62,21 @@ app.get("/api/v1/:user_id/projects", async (request, response) => {
   }
 })
 
+// get the palettes for a specific project
+app.get("/api/v1/palettes/:project_id", async (request, response) => {
+  const { project_id } = request.params;
+  try {
+    const palettes = await database("palettes").where({ project_id });
+    console.log(palettes)
+    if (palettes.length) {
+      return response.status(200).json(palettes);
+    } else {
+      return response.status(404).json({ message: "No palettes yet!" });
+    }
+  } catch {
+    error => response.status(500).json({ error: error });
+  }
+});
+
+
 export default app;
