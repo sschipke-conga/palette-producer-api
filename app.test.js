@@ -118,6 +118,18 @@ describe('Server', () => {
       expect(response.status).toBe(201);
       expect(user.username).toEqual(newUser.username);
     });
+
+    it('should return a 422 if a new user\'s information is unprocessable', async () => {
+      // setup
+      const newUser = { username: 'Pol', blurginflorgins: 'Jamicamanshiplo' };
+
+      // execution
+      const response = await request(app).post('/api/v1/user').send(newUser);
+
+      // expectation
+      expect(response.status).toBe(422);
+      expect(response.body.error).toEqual('No blurginflorgins allowed');
+    });
   });
 
   describe('POST /api/v1/users/:user_id/projects', () => {
@@ -137,6 +149,20 @@ describe('Server', () => {
       // expectation
       expect(response.status).toBe(201);
       expect(project.name).toEqual(newProject.name);
+    });
+
+    it('should return a 422 if a new project\'s information is unprocessable', async () => {
+      // setup
+      const newProject = { name: 'Neature', jinglehighmerblopins: 'Lejobes' };
+      const user = await database('user').first();
+      const { id } = user;
+
+      // execution
+      const response = await request(app).post(`/api/v1/users/${id}/projects`).send(newProject);
+
+      // expectation
+      expect(response.status).toBe(422);
+      expect(response.body.error).toEqual('No jinglehighmerblopins allowed');
     });
   });
 
@@ -158,5 +184,20 @@ describe('Server', () => {
       expect(response.status).toBe(201);
       expect(palette.name).toEqual(newPalette.name);
     });
+
+    it('should return a 422 if a new palette\'s information is unprocessable', async () => {
+      // setup
+      const newPalette = { name: 'Green', grarrarrarra: 'rrrrrrrrrrrrr' };
+      const project = await database('project').first();
+      const { id, user_id } = project;
+
+      // execution
+      const response = await request(app).post(`/api/v1/user/${user_id}/project/${id}/palettes`).send(newPalette);
+
+      // expectation
+      expect(response.status).toBe(422);
+      expect(response.body.error).toEqual('What?!');
+    });
+
   });
 });
