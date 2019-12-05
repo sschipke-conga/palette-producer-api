@@ -62,12 +62,26 @@ app.get("/api/v1/:user_id/projects", async (request, response) => {
   }
 })
 
+app.get("/api/v1/projects/:id", async (request, response) => {
+  const { id } = request.params;
+  try {
+    const project = await database("projects").where({id}).first();
+    console.log(project)
+    if (project) {
+      return response.status(200).json(project);
+    } else {
+      return response.status(404).json({ message: `No project with  and id of ${id} was found!` });
+    }
+  } catch {
+    error => response.status(500).json({ error: error });
+  }
+});
+
 // get the palettes for a specific project
-app.get("/api/v1/palettes/:project_id", async (request, response) => {
+app.get("/api/v1/:project_id/palettes/", async (request, response) => {
   const { project_id } = request.params;
   try {
     const palettes = await database("palettes").where({ project_id });
-    console.log(palettes)
     if (palettes.length) {
       return response.status(200).json(palettes);
     } else {
