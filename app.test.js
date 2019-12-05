@@ -101,4 +101,62 @@ describe('Server', () => {
       expect(palettes).toEqual(expectedPalettes);
     });
   });
+
+  describe('POST /api/v1/users', () => {
+    it('should post a new user to the db', async () => {
+      // setup
+      const newUser = { username: 'Pol', password: 'password', projects: [] };
+
+      // execution
+      const response = await request(app).post('/api/v1/user').send(newUser);
+
+      const users = await database('users').where('id', response.body.id).select();
+      const user = users[0];
+
+
+      // expectation
+      expect(response.status).toBe(201);
+      expect(user.username).toEqual(newUser.username);
+    });
+  });
+
+  describe('POST /api/v1/users/:user_id/projects', () => {
+    it('should post a new project to the db', async () => {
+      // setup
+      const newProject = { name: 'Neature', palettes: [] };
+      const user = await database('user').first();
+      const { id } = user;
+
+      // execution
+      const response = await request(app).post(`/api/v1/users/${id}/projects`).send(newProject);
+
+      const projects = await database('projects').where('id', response.body.id).select();
+      const project = projects[0];
+
+
+      // expectation
+      expect(response.status).toBe(201);
+      expect(project.name).toEqual(newProject.name);
+    });
+  });
+
+  describe('POST /api/v1/users/:user_id/projects/:project_id/palettes/:palette_id', () => {
+    it('should post a new palette to the db', async () => {
+      // setup
+      const newPalette = { name: 'Green', color1: '#asdfgh', color2: '#qwerty', color3: '#ghjklp', color4: '#123456', color5: '#098765' };
+      const project = await database('project').first();
+      const { id, user_id } = project;
+
+      // execution
+      const response = await request(app).post(`/api/v1/user/${user_id}/project/${id}/palettes`).send(newPalette);
+
+      const palettes = await database('palettes').where('id', response.body.id).select();
+      const palette = palettes[0];
+
+
+      // expectation
+      expect(response.status).toBe(201);
+      expect(palette.name).toEqual(newPalette.name);
+    });
+  });
 });
