@@ -32,7 +32,7 @@ app.post("/api/v1/login", (request, response) => {
 
 // create a new user
 
-app.post("/api/v1/users", (request, response) => {
+app.post("/api/v1/signup", (request, response) => {
   const { username, password } = request.body;
   database("users")
     .insert({ username, password }, "id")
