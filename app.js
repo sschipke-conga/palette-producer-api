@@ -46,4 +46,20 @@ app.post("/api/v1/users", (request, response) => {
     .catch(err => response.status(500).json({ error: err }));
 });
 
+// get all the projects for a specific user
+
+app.get("/api/v1/:user_id/projects", async (request, response) => {
+  const {user_id} = request.params
+  try {
+  const projects = await database("projects").where({user_id})
+  if(projects.length) {
+    return response.status(200).json(projects)
+  } else {
+    return response.status(404).json({message: "No projects yet!"})
+  }
+  } catch {
+    error => response.status(500).json({error: error})
+  }
+})
+
 export default app;
