@@ -66,7 +66,6 @@ app.get("/api/v1/projects/:id", async (request, response) => {
   const { id } = request.params;
   try {
     const project = await database("projects").where({id}).first();
-    console.log(project)
     if (project) {
       return response.status(200).json(project);
     } else {
@@ -90,6 +89,45 @@ app.get("/api/v1/:project_id/palettes/", async (request, response) => {
   } catch {
     error => response.status(500).json({ error: error });
   }
+});
+
+// ad a new project to the db
+app.post("/api/v1/projects", async (request, response) => {
+  const project = request.body;
+  for (let requiredParameter of ['user_id', 'name']) {
+    if (!project[requiredParameter]) {
+      return response
+        .status(422)
+        .send({ error: `Expected format: { user_id: <integer>, name: <string>}. You're missing a '${requiredParameter}' property.` });
+    }
+  }
+  database('projects').insert(project, 'id')
+    .then(projectId => {
+      response.status(201).json({ id: projectId[0], ...project })
+    })
+    .catch(error => {
+      response.status(500).json({ error });
+    });
+})
+
+app.post("/api/v1/palettes", async (request, response) => {
+  const palette = request.body;
+  console.log(palette)
+  for (let requiredParameter of ["project_id", "name", "color1", "color2", "color3", "color4", "color5"]) {
+    if (!palette[requiredParameter]) {
+      return response.status(422).send({
+        error: `Expected format: { project_id: <integer>, name: <string>, color1:<hexcode>, color1]2:<hexcode>, color3:<hexcode>, color4:<hexcode>, color5:<hexcode>}. You're missing a '${requiredParameter}' property.`
+      });
+    }
+  }
+  database("palettes")
+    .insert(palette, "id")
+    .then(paletteId => {
+      response.status(201).json({ id: paletteId[0], ...palette });
+    })
+    .catch(error => {
+      response.status(500).json({ error: error });
+    });
 });
 
 
