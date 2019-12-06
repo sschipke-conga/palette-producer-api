@@ -4,5 +4,5 @@ node_js:
 services: 
   - postgresql
 before_script: 
-  - psql -c 'CREATE DATABASE paletteproducer_test; knex migrate:latest --env=test;
-  knex seed:run --env=test;' -U postgres
+  - psql -c 'CREATE DATABASE paletteproducer_test;' -U postgres
+  - knex migrate:latest --env=test
