@@ -1,8 +1,14 @@
 language: node_js
-node_js: 
-  - node
-services: 
-  - postgresql
-before_script: 
-  - psql -c 'CREATE DATABASE paletteproducer_test;' -U postgres
-  - knex migrate:latest --env=test
+node_js:
+- node
+services:
+- postgresql
+before_script:
+- psql -c 'CREATE DATABASE paletteproducer_test;' -U postgres
+- knex migrate:latest --env=test
+deploy:
+  provider: heroku
+  api_key:
+    secure: Ozs3+PHqncb/oOhwTwCBIgdkZ1x/N2avEYUu0i7zxhSIlAbw/K49j6BK7DF3enx6p2OdVHQ+XCbl7FI5oOu9zXQSHc6PLradfhpN1wjLc90OvVFWZsJ0NbuFN21l+y16sp2tryfgO2Q4LeEMuip8dr9jLy+DZ5M17BLTm2grafCusR6jxNeTNcn7hhyELF6fNEgTsjw17/i35PjGToBj6CpOpmcGGkRUbUjyTMyvQX5Y1TdNl6q7Jl6PlLTlGX7LxFWmbdC5WBXfzTUM2ITEbWKjBy8Ba0d92zs7UUTcRLUYCjX2y821tBWo6kHzp4Sc5t/BIq8nHNUFZczW4R+1Ldj8KQKFl/SUBnQ/LDMOtJhVNPFoBArZXQpfrVVWPeSi0c74XJH0auob/pu7oSFz6eMTy8/AkGczKe4rOYIoJMga1MBRfTKkIr2SAF4FL44EBdm37JzX0rOvPiOZmJ+NDJ9IQPtVgXqjKIoQZhP+xgCdpDzkKe7kd5cES0rhEVTkK0eoJU7k77K+oXgUSzY3OICpc3TGs5ElwDKT2jWPfLCQRV4p2r/lhWv10nppsX5avToZzS6V12qkV4I4QLUXpB1lKokB/HtZRHCPgl3/IJ7N6+IKYoNJMc4lDUITLHlhgKpOGrc5iCh9T96EyWBNhsVvBLfsDTAfBuGAcvn5pvA=
+  app: palette-producer-api
+  skip_cleanup: true
