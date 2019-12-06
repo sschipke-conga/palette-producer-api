@@ -9,7 +9,7 @@ app.locals.title = 'Palette Producer';
 app.use(cors());
 app.use(express.json());
 
-// All endpoints live here
+// *** Endpoints ***
 
 // login an already existing user
 app.post("/api/v1/login", (request, response) => {
