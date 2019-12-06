@@ -62,13 +62,14 @@ app.get("/api/v1/users/:user_id/projects", async (request, response) => {
   if(projects.length) {
     return response.status(200).json(projects)
   } else {
-    return response.status(404).json({message: "No projects yet!"})
+    return response.status(404).json({error: "No projects yet!"})
   }
   } catch {
     error => response.status(500).json({error: error})
   }
 })
 
+// get a specific project by its id
 app.get("/api/v1/projects/:id", async (request, response) => {
   const { id } = request.params;
   try {
@@ -91,7 +92,7 @@ app.get("/api/v1/:project_id/palettes/", async (request, response) => {
     if (palettes.length) {
       return response.status(200).json(palettes);
     } else {
-      return response.status(404).json({ message: "No palettes yet!" });
+      return response.status(404).json({ error: "No palettes yet!" });
     }
   } catch {
     error => response.status(500).json({ error: error });
