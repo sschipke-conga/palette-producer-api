@@ -1,8 +1,7 @@
 language: node_js
 node_js: 
-  - "node"
-
-  services: 
-    - postgresql
-  before_script: 
-    - psql -c 'CREATE DATABASE paletteproducer_test;' -U postgres
+  - node
+services: 
+  - postgresql
+before_script: 
+  - psql -c 'CREATE DATABASE paletteproducer_test;' -U postgres
