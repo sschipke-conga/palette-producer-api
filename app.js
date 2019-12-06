@@ -35,7 +35,7 @@ app.post("/api/v1/login", (request, response) => {
 app.post("/api/v1/signup", (request, response) => {
   const { username, password } = request.body;
   for (let requiredParameter of ["username", "password"]) {
-    if (!palette[requiredParameter]) {
+    if (!request.body[requiredParameter]) {
       return response.status(422).send({
         error: `Expected format: {username: <string>, password <string>. You're missing a '${requiredParameter}' property.`
       });
