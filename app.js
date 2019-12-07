@@ -9,12 +9,11 @@ app.locals.title = 'Palette Producer';
 app.use(cors());
 app.use(express.json());
 
-// All endpoints live here
+// *** Endpoints ***
 
 // login an already existing user
 app.post("/api/v1/login", (request, response) => {
   const { username, password } = request.body;
-  console.log(username, password)
   database("users")
     .where({ username, password })
     .then(users => {
@@ -24,7 +23,7 @@ app.post("/api/v1/login", (request, response) => {
       } else {
         return response
           .status(401)
-          .json({error:"Username or password incorrect"});
+          .json({ error: "Username or password incorrect" });
       }
     })
     .catch(err => response.status(500).json({ error: err }));
@@ -44,11 +43,7 @@ app.post("/api/v1/signup", (request, response) => {
   database("users")
     .insert({ username, password }, "id")
     .then(id => {
-      if (id.length) {
-        return response.status(201).json({ username, id: id[0] });
-      } else {
-        return response.status(422).json({ error: "Could not create user" });
-      }
+      return response.status(201).json({ username, id: id[0] });
     })
     .catch(err => response.status(500).json({ error: err }));
 });
@@ -56,7 +51,7 @@ app.post("/api/v1/signup", (request, response) => {
 // get all the projects for a specific user
 
 app.get("/api/v1/users/:user_id/projects", async (request, response) => {
-  const {user_id} = request.params
+  const { user_id } = request.params
   try {
   const projects = await database("projects").where({user_id})
   if(projects.length) {
@@ -65,7 +60,7 @@ app.get("/api/v1/users/:user_id/projects", async (request, response) => {
     return response.status(404).json({error: "No projects yet!"})
   }
   } catch {
-    error => response.status(500).json({error: error})
+    error => response.status(500).json({ error: error })
   }
 })
 
@@ -73,7 +68,7 @@ app.get("/api/v1/users/:user_id/projects", async (request, response) => {
 app.get("/api/v1/projects/:id", async (request, response) => {
   const { id } = request.params;
   try {
-    const project = await database("projects").where({id}).first();
+    const project = await database("projects").where({ id }).first();
     if (project) {
       return response.status(200).json(project);
     } else {
@@ -85,7 +80,7 @@ app.get("/api/v1/projects/:id", async (request, response) => {
 });
 
 // get the palettes for a specific project
-app.get("/api/v1/:project_id/palettes/", async (request, response) => {
+app.get("/api/v1/projects/:project_id/palettes/", async (request, response) => {
   const { project_id } = request.params;
   try {
     const palettes = await database("palettes").where({ project_id });
@@ -121,11 +116,10 @@ app.post("/api/v1/projects", async (request, response) => {
 // add a palette to the db
 app.post("/api/v1/palettes", async (request, response) => {
   const palette = request.body;
-  console.log(palette)
   for (let requiredParameter of ["project_id", "name", "color1", "color2", "color3", "color4", "color5"]) {
     if (!palette[requiredParameter]) {
       return response.status(422).send({
-        error: `Expected format: { project_id: <integer>, name: <string>, color1:<hexcode>, color1]2:<hexcode>, color3:<hexcode>, color4:<hexcode>, color5:<hexcode>}. You're missing a '${requiredParameter}' property.`
+        error: `Expected format: { project_id: <integer>, name: <string>, color1:<hexcode>, color2:<hexcode>, color3:<hexcode>, color4:<hexcode>, color5:<hexcode>}. You're missing a '${requiredParameter}' property.`
       });
     }
   }
@@ -143,7 +137,6 @@ app.post("/api/v1/palettes", async (request, response) => {
 
 app.patch("/api/v1/palettes/:id", async (request, response) => {
   const { id } = request.params;
-  console.log(request.body)
   const selectedPalette = await database("palettes")
     .where("id", id)
     .select();
@@ -152,7 +145,7 @@ app.patch("/api/v1/palettes/:id", async (request, response) => {
       .status(404)
       .json({ error: `No existing palette with id of ${id}` });
   }
-  const  possibleParameters = [
+  const possibleParameters = [
     "name",
     "color1",
     "color2",
@@ -162,64 +155,61 @@ app.patch("/api/v1/palettes/:id", async (request, response) => {
   ];
   const targetParam = Object.keys(request.body)[0];
   const hasCorrectParams = possibleParameters.includes(targetParam);
-  console.log(targetParam, hasCorrectParams)
-    if (!hasCorrectParams) {
-        return response.status(422).json({
-        error: `You can only update a palette's <name>, <color1>, <color2>, <color3>, <color4>, <color5>, not ${targetParam}`
-      });
-    }
-    else {
-          return database("palettes")
-            .where("id", id)
-            .update({
-              [targetParam]: request.body[targetParam]
-            })
-            .then(() =>
-              response
-                .status(202)
-                .json({ message: `${targetParam} updated` })
-            )
-            .catch(error => response.status(500).json({ error }));
-    }
+  if (!hasCorrectParams) {
+    return response.status(422).json({
+      error: `You can only update a palette's <name>, <color1>, <color2>, <color3>, <color4>, <color5>, not ${targetParam}`
+    });
+  }
+  else {
+    return database("palettes")
+      .where("id", id)
+      .update({
+        [targetParam]: request.body[targetParam]
+      })
+      .then(() =>
+        response
+          .status(202)
+          .json({ message: `${targetParam} updated` })
+      )
+      .catch(error => response.status(500).json({ error }));
+  }
 });
 
 // patch a project
 
 app.patch("/api/v1/projects/:id", async (request, response) => {
   const { id } = request.params;
-  console.log(request.body)
   const selectedProject = await database("projects")
     .where("id", id)
     .select();
   if (!selectedProject.length) {
     return response
       .status(404)
-      .json({ error: `No existing palette with id of ${id}` });
+      .json({ error: `No existing project with id of ${id}` });
   }
-  const  possibleParameters = [
+  const possibleParameters = [
     "name"
   ];
   const targetParam = Object.keys(request.body)[0];
   const hasCorrectParams = possibleParameters.includes(targetParam);
-  console.log(targetParam, hasCorrectParams)
-    if (!hasCorrectParams) {
-        return response.status(422).json({
-        error: `You can only update a projects's <name> not ${targetParam}`
-      });
-    }
-    else {
-          return database("projects")
-            .where("id", id)
-            .update({
-              [targetParam]: request.body[targetParam]
-            })
-            .then(() =>
-              response
-                .status(202)
-                .json({ message: `${targetParam} updated` })
-            )
-            .catch(error => response.status(500).json({ error }));
-    }
+  if (!hasCorrectParams) {
+    return response.status(422).json({
+      error: `You can only update a projects's <name> not ${targetParam}`
+    });
+  }
+  else {
+    return database("projects")
+      .where("id", id)
+      .update({
+        [targetParam]: request.body[targetParam]
+      })
+      .then(() =>
+        response
+          .status(202)
+          .json({ message: `${targetParam} updated` })
+      )
+      .catch(error => response.status(500).json({ error }));
+  }
 });
 
 // delete a project 
