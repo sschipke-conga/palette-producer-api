@@ -99,7 +99,7 @@ describe('Server', () => {
 
       // expectation
       expect(response.status).toBe(404);
-      expect(response.body.message).toEqual('No projects yet!');
+      expect(response.body.error).toEqual('No projects yet!');
     });
   });
 
@@ -157,7 +157,7 @@ describe('Server', () => {
 
       // expectation
       expect(response.status).toBe(404);
-      expect(response.body.message).toEqual('No palettes yet!');
+      expect(response.body.error).toEqual('No palettes yet!');
     });
   });
 
