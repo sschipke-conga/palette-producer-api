@@ -1,20 +1,30 @@
-# All JavaScript All Shade
-A RuPaul's Drage Race API for accessing all the queens, and all the seasons for the beloved show. This API is deployed live [here!](https://allshade.herokuapp.com/)
+# Palette Producer
+An API whereby users are able to create users, log them in and allow them to make multiple projects each with multiple palettes. Palettes consist of 5 colors in hex code form. This API is deployed live [here!](https://palette-producer-api.herokuapp.com/)
 
 ## Collaborators 
-- Scott Schipke GitHub: [swschipke](https://github.com/sschipke)
-- Pol Sieira GitHub: [polsieira](https://github.com/polsieira)
+- [Pol Sieira](https://github.com/polsieira)
+- [Scott Schipke](https://github.com/sschipke)
 
 
 ### Technologies 
-This api was almost written entirely in JavScript use the following libraries and frameworks
+This api was almost written entirely in JavaScript using the following libraries and frameworks
 - Node.js
 - Express.js
 - Knex
 - Postgresql for database management
+- Travis CI for Continuous Integration
+- Heroku for deployment and hosting
+
+### Schema 
+<details>
+<summary>Data flow and database schema (PSQL)</summary>
+
+![Schema](./docs/images/schema.png)
+</details>
 
 ### Use of this api
  Use this api to create, and login users. Once they have been established it is then possible to add projects for a user and each project can then contain multiple palettes (one to many relationship). There are endpoints for: 
+ - creating and logging in users
  - adding projects or palettes
  - deleting projects or palettes
  - update projects or palettes
@@ -149,7 +159,7 @@ This api was almost written entirely in JavScript use the following libraries an
 
   ```json
 {
-    "message": "No project with  and id of 100 was found!"
+    "message": "No project with an id of 100 was found!"
 }
 ```
 ### Statuses:
@@ -164,7 +174,7 @@ This api was almost written entirely in JavScript use the following libraries an
 <details>
   <summary> <code>GET</code> the palettes for a project</summary>
 
-  example request : `GET` `/api/v1/:project_id/palettes/`
+  example request : `GET` `/api/v1/projects/:project_id/palettes/`
   <br>
   example successful response: 
 
@@ -282,3 +292,165 @@ This api was almost written entirely in JavScript use the following libraries an
 </details>
 
 ---
+<details>
+  <summary> <code>PATCH</code> an update to a palette</summary>
+
+  example request : `PATCH` `/api/v1/palettes/:id`
+  <br>
+  example successful response: 
+
+  ```json
+{
+    "message": "[property] updated"
+}
+  ```
+
+  example <b>un</b>successful response if no palette is found
+
+  ```json
+{
+    "error": "No existing palette with id of 1"
+}
+```
+  example <b>un</b>successful response if request body is invalid
+
+  ```json
+{
+    "error": "You can only update a palette's <name>, <color1>, <color2>, <color3>, <color4>, <color5>, not [sent parameter]"
+}
+```
+### Possible Keys in body of request:
+| Key        | Datatype           |
+| :-------------: |:-------------:|
+| name      | `<string>`      |
+| color1      | `<hex code>`      |
+| color2      | `<hex code>`      |
+| color3      | `<hex code>`      |
+| color4      | `<hex code>`      |
+| color5      | `<hex code>`      |
+
+### Statuses:
+ | Status        | Meaning           |
+| :-------------: |:-------------:|
+| `202`      | Success |
+| `404`      | No palette was found with the id sent  |
+| `422`      | Response body was not formatted correctly/did not have the correct property to update |
+</details>
+
+---
+<details>
+  <summary> <code>PATCH</code> an update to a project</summary>
+
+  example request : `PATCH` `/api/v1/projects/:id`
+  <br>
+  example successful response: 
+
+  ```json
+{
+    "message": "[property] updated"
+}
+  ```
+
+  example <b>un</b>successful response if no project is found
+
+  ```json
+{
+    "error": "No existing project with id of 3"
+}
+```
+  example <b>un</b>successful response if request body is invalid
+
+  ```json
+{
+    "error": "You can only update a project's <name>, not [sent property]"
+}
+```
+### Possible Keys in body of request:
+| Key        | Datatype           |
+| :-------------: |:-------------:|
+| name      | `<string>`      |
+
+### Statuses:
+ | Status        | Meaning           |
+| :-------------: |:-------------:|
+| `202`      | Success |
+| `404`      | No project was found with the id sent  |
+| `422`      | Response body was not formatted correctly (can only update the name) |
+</details>
+
+---
+<details>
+  <summary> <code>DELETE</code> a single project using its id </summary>
+
+  example request : `DELETE` `/api/v1/projects/:id`
+  <br>
+  example successful response: 
+
+  ```json
+{
+  "Project deleted"
+}
+  ```
+
+  example <b>un</b>successful response 
+
+  ```json
+{
+    "message": "No project with an id of 100 was found!"
+}
+```
+### Statuses:
+ | Status        | Meaning           |
+| :-------------: |:-------------:|
+| `200`      | Success |
+| `404`      | Project does not exist   |
+
+</details>
+
+---
+<details>
+  <summary> <code>DELETE</code> a single palette using its id </summary>
+
+  example request : `DELETE` `/api/v1/projects/:id`
+  <br>
+  example successful response: 
+
+  ```json
+{
+  "Palette deleted"
+}
+  ```
+
+  example <b>un</b>successful response 
+
+  ```json
+{
+    "Palette with an id: 4 does not exist"
+}
+```
+### Statuses:
+ | Status        | Meaning           |
+| :-------------: |:-------------:|
+| `200`      | Success |
+| `404`      | Palette does not exist   |
+
+</details>
+
+### Installation instructions
+- below are instructions for using this application locally
+- environment variables have been used to dynamically allow use of the API both locally and remotely
+
+<details>
+  <summary>Instructions for locally installing this API</summary>
+
+  1. `clone` down this repo
+  1. In the command line run: `$ npm i`
+  1. Next run `$ npm start` 
+  <br>
+  The following message should appear:
+  ```javascript
+  Palette Producer is running on localhost:3001
+  ```
+  4. The API is now available for consumption locally
+
+</details>

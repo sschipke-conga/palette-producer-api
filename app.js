@@ -134,7 +134,6 @@ app.post("/api/v1/palettes", async (request, response) => {
 });
 
 // patch a palette
-
 app.patch("/api/v1/palettes/:id", async (request, response) => {
   const { id } = request.params;
   const selectedPalette = await database("palettes")
@@ -232,7 +231,7 @@ app.delete("/api/v1/projects/:id", (request, response) => {
       response.status(500).json(err);
     });
 });
-
+// delete a palette using its id
 app.delete("/api/v1/palettes/:id", (request, response) => {
   const { id } = request.params;
   database("palettes")
@@ -255,6 +254,12 @@ app.get("/api/v1/teapot", (request, response) => {
   return response
     .status(418)
     .json("The server refuses the attempt to brew coffee with a teapot");
+})
+
+app.get("/", (request, response) => {
+  return response
+  .status(200)
+  .json("Let's produce some palettes!")
 })
 
 
