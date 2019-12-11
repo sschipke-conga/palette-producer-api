@@ -53,17 +53,18 @@ app.post("/api/v1/signup", (request, response) => {
 app.get("/api/v1/users/:user_id/projects", async (request, response) => {
   const { user_id } = request.params
   try {
-    const projects = await database("projects").where({ user_id })
-    if (projects.length) {
-      return response.status(200).json(projects)
-    } else {
-      return response.status(404).json({ message: "No projects yet!" })
-    }
+  const projects = await database("projects").where({user_id})
+  if(projects.length) {
+    return response.status(200).json(projects)
+  } else {
+    return response.status(404).json({error: "No projects yet!"})
+  }
   } catch {
     error => response.status(500).json({ error: error })
   }
 })
 
+// get a specific project by its id
 app.get("/api/v1/projects/:id", async (request, response) => {
   const { id } = request.params;
   try {
@@ -86,7 +87,7 @@ app.get("/api/v1/projects/:project_id/palettes/", async (request, response) => {
     if (palettes.length) {
       return response.status(200).json(palettes);
     } else {
-      return response.status(404).json({ message: "No palettes yet!" });
+      return response.status(404).json({ error: "No palettes yet!" });
     }
   } catch {
     error => response.status(500).json({ error: error });
@@ -133,7 +134,6 @@ app.post("/api/v1/palettes", async (request, response) => {
 });
 
 // patch a palette
-
 app.patch("/api/v1/palettes/:id", async (request, response) => {
   const { id } = request.params;
   const selectedPalette = await database("palettes")
@@ -231,7 +231,7 @@ app.delete("/api/v1/projects/:id", (request, response) => {
       response.status(500).json(err);
     });
 });
-
+// delete a palette using its id
 app.delete("/api/v1/palettes/:id", (request, response) => {
   const { id } = request.params;
   database("palettes")
@@ -254,6 +254,12 @@ app.get("/api/v1/teapot", (request, response) => {
   return response
     .status(418)
     .json("The server refuses the attempt to brew coffee with a teapot");
+})
+
+app.get("/", (request, response) => {
+  return response
+  .status(200)
+  .json("Let's produce some palettes!")
 })
 
 
