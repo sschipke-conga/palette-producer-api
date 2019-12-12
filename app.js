@@ -53,12 +53,12 @@ app.post("/api/v1/signup", (request, response) => {
 app.get("/api/v1/users/:user_id/projects", async (request, response) => {
   const { user_id } = request.params
   try {
-  const projects = await database("projects").where({user_id})
-  if(projects.length) {
-    return response.status(200).json(projects)
-  } else {
-    return response.status(404).json({error: "No projects yet!"})
-  }
+    const projects = await database("projects").where({ user_id })
+    if (projects.length) {
+      return response.status(200).json(projects)
+    } else {
+      return response.status(404).json({ error: "No projects yet!" })
+    }
   } catch {
     error => response.status(500).json({ error: error })
   }
@@ -133,9 +133,19 @@ app.post("/api/v1/palettes", async (request, response) => {
     });
 });
 
-// patch a palette
-app.patch("/api/v1/palettes/:id", async (request, response) => {
+// put a palette
+
+app.put("/api/v1/palettes/:id", async (request, response) => {
   const { id } = request.params;
+  const palette = request.body;
+  console.log('New----->', palette)
+  for (let requiredParameter of ["project_id", "name", "color1", "color2", "color3", "color4", "color5"]) {
+    if (!palette[requiredParameter]) {
+      return response.status(422).send({
+        error: `Expected format: { project_id: <integer>, name: <string>, color1:<hexcode>, color2:<hexcode>, color3:<hexcode>, color4:<hexcode>, color5:<hexcode>}. You're missing a '${requiredParameter}' property.`
+      });
+    }
+  }
   const selectedPalette = await database("palettes")
     .where("id", id)
     .select();
@@ -144,31 +154,14 @@ app.patch("/api/v1/palettes/:id", async (request, response) => {
       .status(404)
       .json({ error: `No existing palette with id of ${id}` });
   }
-  const possibleParameters = [
-    "name",
-    "color1",
-    "color2",
-    "color3",
-    "color4",
-    "color5"
-  ];
-  const targetParam = Object.keys(request.body)[0];
-  const hasCorrectParams = possibleParameters.includes(targetParam);
-  if (!hasCorrectParams) {
-    return response.status(422).json({
-      error: `You can only update a palette's <name>, <color1>, <color2>, <color3>, <color4>, <color5>, not ${targetParam}`
-    });
-  }
   else {
     return database("palettes")
       .where("id", id)
-      .update({
-        [targetParam]: request.body[targetParam]
-      })
+      .update(palette)
       .then(() =>
         response
           .status(202)
-          .json({ message: `${targetParam} updated` })
+          .json({ message: `${palette.name} updated` })
       )
       .catch(error => response.status(500).json({ error }));
   }
@@ -211,7 +204,7 @@ app.patch("/api/v1/projects/:id", async (request, response) => {
   }
 });
 
-// delete a project 
+// delete a project
 app.delete("/api/v1/projects/:id", (request, response) => {
   const { id } = request.params;
   database("projects")
@@ -258,8 +251,8 @@ app.get("/api/v1/teapot", (request, response) => {
 
 app.get("/", (request, response) => {
   return response
-  .status(200)
-  .json("Let's produce some palettes!")
+    .status(200)
+    .json("Let's produce some palettes!")
 })
 
 
