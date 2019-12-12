@@ -138,7 +138,6 @@ app.post("/api/v1/palettes", async (request, response) => {
 app.put("/api/v1/palettes/:id", async (request, response) => {
   const { id } = request.params;
   const palette = request.body;
-  console.log('New----->', palette)
   for (let requiredParameter of ["project_id", "name", "color1", "color2", "color3", "color4", "color5"]) {
     if (!palette[requiredParameter]) {
       return response.status(422).send({
