@@ -11,15 +11,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "nodemon": "^2.0.1",
-    "cors": "^2.8.5",
-    "express": "^4.17.1",
-    "knex": "^0.20.3",
-    "pg": "^7.14.0",
     "@babel/core": "^7.7.4",
     "@babel/node": "^7.7.4",
     "@babel/polyfill": "^7.7.0",
-    "@babel/preset-env": "^7.7.4"
+    "@babel/preset-env": "^7.7.4",
+    "bcrypt": "^3.0.7",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "knex": "^0.20.3",
+    "nodemon": "^2.0.1",
+    "pg": "^7.14.0"
   },
   "devDependencies": {
     "babel-jest": "^24.9.0",

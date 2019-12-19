@@ -3,6 +3,8 @@ import cors from 'cors';
 const environment = process.env.NODE_ENV || 'development';
 const configuration = require('./knexfile')[environment];
 const database = require('knex')(configuration);
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 const app = express();
 
 app.locals.title = 'Palette Producer';
@@ -14,19 +16,22 @@ app.use(express.json());
 // login an already existing user
 app.post("/api/v1/login", (request, response) => {
   const { username, password } = request.body;
-  database("users")
-    .where({ username, password })
-    .then(users => {
-      if (users.length) {
-        const { id, name, username } = users[0];
-        return response.status(200).json({ id, name, username });
-      } else {
-        return response
-          .status(401)
-          .json({ error: "Username or password incorrect" });
-      }
-    })
-    .catch(err => response.status(500).json({ error: err }));
+    database("users")
+      .where({ username })
+      .then(result => {
+        const hash = result[0].password.toString()
+        bcrypt.compare(password, hash, function(err, comparison) {
+          if (comparison) {
+          const { id, username } = result[0];
+          return response.status(200).json({ id, username });
+        } else {
+          return response
+            .status(401)
+            .json({ error: "Username or password incorrect" });
+        }
+        })
+      })
+      .catch(err => response.status(500).json({ error: err }));
 });
 
 // create a new user
@@ -40,12 +45,17 @@ app.post("/api/v1/signup", (request, response) => {
       });
     }
   }
-  database("users")
-    .insert({ username, password }, "id")
-    .then(id => {
-      return response.status(201).json({ username, id: id[0] });
-    })
-    .catch(err => response.status(500).json({ error: err }));
+  bcrypt.hash(password, saltRounds, function(err, hash) {
+    database("users")
+      .insert({ username, password:hash }, "id")
+      .then(id => {
+        return response.status(201).json({ username, id: id[0] });
+      })
+      .catch(err => {
+        console.error(err)
+        return response.status(500).json({ error: err })
+    });
+  })
 });
 
 // get all the projects for a specific user
