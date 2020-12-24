@@ -7,8 +7,27 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const app = express();
 
+// ** Whitelisted domains **
+
+const allowedOrigins = ['https://palette-producer.herokuapp.com']
+
 app.locals.title = 'Palette Producer';
-app.use(cors());
+
+const corsOptions = {
+origin: function(origin, callback) {
+  if (!origin) return callback(null, true);
+  if (allowedOrigins.indexOf(origin) === -1) {
+    var msg = 'The CORS policy for this site does not ' +
+      'allow access from the specified Origin.';
+    return callback(new Error(msg), false);
+  }
+  return callback(null, true);
+}
+}
+
+// const corsOptions = { origin: 'https://palette-producer.herokuapp.com'}
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // *** Endpoints ***
@@ -259,9 +278,10 @@ app.get("/api/v1/teapot", (request, response) => {
 })
 
 app.get("/", (request, response) => {
+  console.log('Headers ->', request.headers)
   return response
-    .status(200)
-    .json("Let's produce some palettes!")
+  .status(200)
+  .json("Let's produce some palettes!")
 })
 
 
