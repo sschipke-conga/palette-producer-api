@@ -1,8 +1,7 @@
-# Palette Producer
-An API whereby users are able to create users, log them in and allow them to make multiple projects each with multiple palettes. Palettes consist of 5 colors in hex code form. This API is deployed live [here!](https://palette-producer-api.herokuapp.com/)
+# Noir Films Api
+This API is intended to be used for the _Noir Films_ movie club. It uses it's own data, as well as data provided by [The MovieDB](https://developers.themoviedb.org/3/getting-started) to keep track of movies the group would like to see, as well as which movies they have already seen.
 
-## Collaborators 
-- [Pol Sieira](https://github.com/polsieira)
+## Contributors 
 - [Scott Schipke](https://github.com/sschipke)
 
 
@@ -12,8 +11,6 @@ This api was almost written entirely in JavaScript using the following libraries
 - Express.js
 - Knex
 - Postgresql for database management
-- Travis CI for Continuous Integration
-- Heroku for deployment and hosting
 
 ### Schema 
 <details>
@@ -26,8 +23,8 @@ This api was almost written entirely in JavaScript using the following libraries
  Use this api to create, and login users. Once they have been established it is then possible to add projects for a user and each project can then contain multiple palettes (one to many relationship). There are endpoints for: 
  - creating and logging in users
  - adding projects or palettes
- - deleting projects or palettes
- - update projects or palettes
+ - deleting tesprojects or palettes
+ - update projects or palet
 
  <details>
   <summary> <code>POST</code> and <b>Create</b>
