@@ -52,7 +52,7 @@ app.post("/api/v1/signup", (request, response) => {
         return response.status(201).json({ username, id: id[0] });
       })
       .catch(err => {
-        console.error(err)
+        console.error("Error in Signup", err)
         return response.status(500).json({ error: err })
     });
   })
