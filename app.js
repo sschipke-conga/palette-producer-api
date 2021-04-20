@@ -70,7 +70,10 @@ app.get("/api/v1/users/:user_id/projects", async (request, response) => {
       return response.status(404).json({ error: "No projects yet!" })
     }
   } catch {
-    error => response.status(500).json({ error: error })
+    error => {
+      console.error(`Error getting projects for user: ${user_id}.`, error)
+      response.status(500).json({ error: error })
+    }
   }
 })
 
